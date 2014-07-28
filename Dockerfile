@@ -11,7 +11,7 @@ RUN echo oracle-java-7-installer shared/accepted-oracle-license-v1-1 select true
 RUN apt-get install -y oracle-java7-installer
 RUN apt-get install -y oracle-java7-set-default
 
-# MySQL
+# MySQL (Metadata store)
 RUN apt-get install -y mysql-server
 
 # Maven
@@ -23,11 +23,14 @@ RUN ln -s /usr/local/apache-maven/bin/mvn /usr/local/bin/mvn
 RUN wget -q -O - http://apache.mirrors.pair.com/zookeeper/zookeeper-3.4.6/zookeeper-3.4.6.tar.gz | tar -xzf - -C /usr/local
 RUN cp /usr/local/zookeeper-3.4.6/conf/zoo_sample.cfg /usr/local/zookeeper-3.4.6/conf/zoo.cfg
 RUN ln -s /usr/local/zookeeper-3.4.6 /usr/local/zookeeper
-# zk start
-# /usr/local/zookeeper/bin/zkServer.sh
 
+# Druid
 # Setup metadata store
 RUN /etc/init.d/mysql start && echo "GRANT ALL ON druid.* TO 'druid'@'localhost' IDENTIFIED BY 'diurd'; CREATE database druid;" | mysql -u root
+
+# Supervisor
+RUN apt-get install -y supervisor
+ADD supervisord.conf /etc/supervisor/conf.d/supervisord.conf
 
 # Clean up
 RUN apt-get clean && rm -rf /tmp/* /var/tmp/*
@@ -39,3 +42,5 @@ RUN apt-get clean && rm -rf /tmp/* /var/tmp/*
 EXPOSE 8080
 EXPOSE 3306
 EXPOSE 2181 2888 3888
+
+CMD /usr/bin/supervisord -c /etc/supervisor/conf.d/supervisord.conf
