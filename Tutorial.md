@@ -4,6 +4,10 @@
 
 [Install Homebrew](http://brew.sh/#install)
 
+```sh
+ruby -e "$(curl -fsSL https://raw.github.com/Homebrew/homebrew/go/install)"
+```
+
 Virtualbox
 
 ```sh
