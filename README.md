@@ -1,4 +1,1 @@
-docker-druid
-============
-
-Druid Docker
+Dockerfile for Druid
