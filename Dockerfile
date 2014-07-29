@@ -27,9 +27,19 @@ RUN wget -q -O - http://apache.mirrors.pair.com/zookeeper/zookeeper-3.4.6/zookee
 RUN cp /usr/local/zookeeper-3.4.6/conf/zoo_sample.cfg /usr/local/zookeeper-3.4.6/conf/zoo.cfg
 RUN ln -s /usr/local/zookeeper-3.4.6 /usr/local/zookeeper
 
-# Druid
+# git
+RUN apt-get install -y git
+
+# Druid (release tarball)
 RUN wget -q -O - http://static.druid.io/artifacts/releases/druid-services-0.6.121-bin.tar.gz | tar -xzf - -C /usr/local
 RUN ln -s /usr/local/druid-services-0.6.121 /usr/local/druid
+
+# Druid (from source)
+#RUN branch=druid-0.6.121; git clone -q --branch $branch --depth 1 https://github.com/metamx/druid.git /tmp/druid
+#WORKDIR /tmp/druid
+#RUN mvn package -DskipTests=true
+#RUN mkdir -p /usr/local/druid/lib
+#RUN cp services/target/druid-services-*-selfcontained.jar /usr/local/druid/lib
 
 # Setup metadata store
 RUN /etc/init.d/mysql start && echo "GRANT ALL ON druid.* TO 'druid'@'localhost' IDENTIFIED BY 'diurd'; CREATE database druid;" | mysql -u root
@@ -42,7 +52,7 @@ RUN apt-get clean && rm -rf /tmp/* /var/tmp/*
 # Expose ports:
 # - 8080: HTTP
 # - 3306: MySQL
-# - 2181 2888 3888 ZooKeeper
+# - 2181 2888 3888: ZooKeeper
 EXPOSE 8080
 EXPOSE 3306
 EXPOSE 2181 2888 3888
