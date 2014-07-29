@@ -8,17 +8,23 @@
 ruby -e "$(curl -fsSL https://raw.github.com/Homebrew/homebrew/go/install)"
 ```
 
-Virtualbox
+[Install Cask](http://caskroom.io/)
 
 ```sh
-brew tap caskroom/cask
-brew install brew-cask
+brew install caskroom/cask/brew-cask
+```
+
+Install Virtualbox
+
+```sh
+brew update
 brew cask install virtualbox
 ```
 
 Boot2Docker
 
 ```sh
+brew update
 brew install boot2docker
 boot2docker init
 boot2docker up
@@ -45,6 +51,4 @@ docker build -t druid/coordinator .
 docker run --rm -p 3000:8080 -t druid/coordinator
 ```
 
-Assuming `boot2docker ip` returns `192.168.59.103`, you should be able to access the coordinator console at:
-
-http://192.168.59.103:3000/
+Assuming `boot2docker ip` returns `192.168.59.103`, you should be able to access the coordinator console at: http://192.168.59.103:3000/
