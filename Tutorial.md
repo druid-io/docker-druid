@@ -47,4 +47,4 @@ docker run --rm -p 3000:8080 -t druid/coordinator
 
 Assuming `boot2docker ip` returns `192.168.59.103`, you should be able to access the coordinator console at:
 
-[http://192.168.59.103:3000/][http://192.168.59.103:3000]
+[http://192.168.59.103:3000/](http://192.168.59.103:3000)
