@@ -47,4 +47,4 @@ EXPOSE 8080
 EXPOSE 3306
 EXPOSE 2181 2888 3888
 
-CMD /usr/bin/supervisord -c /etc/supervisor/conf.d/supervisord.conf
+CMD ["/usr/bin/supervisord", "-c", "/etc/supervisor/conf.d/supervisord.conf"]
