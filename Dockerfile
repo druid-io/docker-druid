@@ -14,6 +14,9 @@ RUN apt-get install -y oracle-java7-set-default
 # MySQL (Metadata store)
 RUN apt-get install -y mysql-server
 
+# Supervisor
+RUN apt-get install -y supervisor
+
 # Maven
 RUN wget -q -O - http://mirror.olnevhost.net/pub/apache/maven/maven-3/3.2.1/binaries/apache-maven-3.2.1-bin.tar.gz | tar -xzf - -C /usr/local
 RUN ln -s /usr/local/apache-maven-3.2.1 /usr/local/apache-maven
@@ -25,11 +28,12 @@ RUN cp /usr/local/zookeeper-3.4.6/conf/zoo_sample.cfg /usr/local/zookeeper-3.4.6
 RUN ln -s /usr/local/zookeeper-3.4.6 /usr/local/zookeeper
 
 # Druid
+RUN wget -q -O - http://static.druid.io/artifacts/releases/druid-services-0.6.121-bin.tar.gz | tar -xzf - -C /usr/local
+RUN ln -s /usr/local/druid-services-0.6.121 /usr/local/druid
+
 # Setup metadata store
 RUN /etc/init.d/mysql start && echo "GRANT ALL ON druid.* TO 'druid'@'localhost' IDENTIFIED BY 'diurd'; CREATE database druid;" | mysql -u root
 
-# Supervisor
-RUN apt-get install -y supervisor
 ADD supervisord.conf /etc/supervisor/conf.d/supervisord.conf
 
 # Clean up
