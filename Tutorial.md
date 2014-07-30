@@ -49,7 +49,7 @@ docker build -t druid/base .
 Build Coordinator image
 
 ```sh
-cd ../coordinator   
+cd ../coordinator
 docker build -t druid/coordinator .
 ```
 
