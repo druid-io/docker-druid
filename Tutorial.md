@@ -37,11 +37,19 @@ Is it running?
 docker info
 ```
 
-## Build Druid Docker Image
-
-Build Druid image
+Build Base image
 
 ```sh
+cd base
+docker build -t druid/base .
+```
+
+## Build Druid Docker Image
+
+Build Coordinator image
+
+```sh
+cd ../coordinator
 docker build -t druid/coordinator .
 ```
 
