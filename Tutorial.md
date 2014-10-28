@@ -28,7 +28,7 @@ brew update
 brew install boot2docker
 boot2docker init
 boot2docker up
-export DOCKER_HOST=tcp://$(boot2docker ip 2>/dev/null):2375
+export DOCKER_HOST=$(boot2docker socket 2>/dev/null)
 ```
 
 Is it running?
@@ -40,6 +40,11 @@ docker info
 ## Build Druid Docker Image
 
 Build Druid image
+
+```sh
+git clone https://github.com/druid-io/docker-druid.git
+cd docker-druid
+```
 
 ```sh
 docker build -t druid/cluster .
