@@ -28,7 +28,7 @@ brew update
 brew install boot2docker
 boot2docker init
 boot2docker up
-export DOCKER_HOST=$(boot2docker socket 2>/dev/null)
+eval "$(boot2docker shellinit)"
 ```
 
 Is it running?
