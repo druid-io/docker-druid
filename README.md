@@ -31,10 +31,10 @@ Wait a minute or so for the Druid to download the sample data an start up.
 ### When running Docker on OS X
 
 Assuming `boot2docker ip` returns `192.168.59.103`, you should be able to
-   - access the coordinator console at: http://192.168.59.103:3001/
+   - access the coordinator console http://192.168.59.103:3001/
    - list data-sources on the broker http://192.168.59.103:3000/druid/v2/datasources
 
 ### On Linux
 
-   - access the coordinator console at: http://localhost:3001/
+   - access the coordinator console http://localhost:3001/
    - list data-sources on the broker http://localhost:3000/druid/v2/datasources
