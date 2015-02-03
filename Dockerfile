@@ -61,7 +61,7 @@ RUN java "-Ddruid.extensions.coordinates=[\"io.druid.extensions:druid-s3-extensi
 WORKDIR /
 
 # Setup metadata store
-RUN /etc/init.d/mysql start && echo "GRANT ALL ON druid.* TO 'druid'@'localhost' IDENTIFIED BY 'diurd'; CREATE database druid;" | mysql -u root && /etc/init.d/mysql stop
+RUN /etc/init.d/mysql start && echo "GRANT ALL ON druid.* TO 'druid'@'localhost' IDENTIFIED BY 'diurd'; CREATE database druid CHARACTER SET utf8;" | mysql -u root && /etc/init.d/mysql stop
 
 # Add sample data
 RUN /etc/init.d/mysql start && java -cp /usr/local/druid/lib/druid-services-*-selfcontained.jar -Ddruid.extensions.coordinates=[\"io.druid.extensions:mysql-metadata-storage\"] -Ddruid.metadata.storage.type=mysql io.druid.cli.Main tools metadata-init --connectURI="jdbc:mysql://localhost:3306/druid" --user=druid --password=diurd && /etc/init.d/mysql stop
