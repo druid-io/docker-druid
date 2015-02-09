@@ -52,9 +52,10 @@ RUN git clone -q --branch $DRUID_VERSION --depth 1 https://github.com/metamx/dru
 RUN mkdir -p /usr/local/druid/lib /usr/local/druid/repository
 WORKDIR /tmp/druid
 # package and install Druid locally
-RUN mvn -B release:prepare -DpushChanges=false -DpreparationGoals=clean -DreleaseVersion=$DRUID_VERSION -DupdateWorkingCopyVersions=false release:perform -Darguments="-DskipTests=true -Dmaven.javadoc.skip=true" -DlocalCheckout=true -Dgoals=install
+RUN mvn -U -B versions:set -DnewVersion=$DRUID_VERSION
+RUN mvn -U -B clean install -DskipTests=true -Dmaven.javadoc.skip=true
 
-RUN cp -f target/checkout/services/target/druid-services-$DRUID_VERSION-selfcontained.jar /usr/local/druid/lib
+RUN cp -f services/target/druid-services-$DRUID_VERSION-selfcontained.jar /usr/local/druid/lib
 # pull dependencies for Druid extensions
 RUN java "-Ddruid.extensions.coordinates=[\"io.druid.extensions:druid-s3-extensions\", \"io.druid.extensions:mysql-metadata-storage\"]" -Ddruid.extensions.localRepository=/usr/local/druid/repository -Ddruid.extensions.remoteRepositories=[\"file:///root/.m2/repository/\",\"http://repo1.maven.org/maven2/\",\"https://metamx.artifactoryonline.com/metamx/pub-libs-releases-local\"] -cp /usr/local/druid/lib/* io.druid.cli.Main tools pull-deps
 
