@@ -36,10 +36,10 @@ RUN adduser --system --group --no-create-home druid \
       && chown druid:druid /var/lib/druid
 
 # Pre-cache Druid dependencies (this step is optional, but can help speed up re-building the Docker image)
-RUN mvn dependency:get -DremoteRepositories=https://metamx.artifactoryonline.com/metamx/pub-libs-releases-local -Dartifact=io.druid:druid-services:0.7.0-rc3
+RUN mvn dependency:get -Dartifact=io.druid:druid-services:0.7.1.1
 
 # Druid (release tarball)
-#ENV DRUID_VERSION 0.7.0
+#ENV DRUID_VERSION 0.7.1.1
 #RUN wget -q -O - http://static.druid.io/artifacts/releases/druid-services-$DRUID_VERSION-bin.tar.gz | tar -xzf - -C /usr/local
 #RUN ln -s /usr/local/druid-services-$DRUID_VERSION /usr/local/druid
 
