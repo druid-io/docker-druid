@@ -1,15 +1,15 @@
 FROM ubuntu:14.04
 
-# Add Java 7 repository
+# Add Java 8 repository
 RUN apt-get update
 RUN apt-get install -y software-properties-common
 RUN apt-add-repository -y ppa:webupd8team/java
 RUN apt-get update
 
-# Oracle Java 7
-RUN echo oracle-java-7-installer shared/accepted-oracle-license-v1-1 select true | /usr/bin/debconf-set-selections
-RUN apt-get install -y oracle-java7-installer
-RUN apt-get install -y oracle-java7-set-default
+# Oracle Java 8
+RUN echo oracle-java-8-installer shared/accepted-oracle-license-v1-1 select true | /usr/bin/debconf-set-selections \
+      && apt-get install -y oracle-java8-installer \
+      && apt-get install -y oracle-java8-set-default
 
 # MySQL (Metadata store)
 RUN apt-get install -y mysql-server
