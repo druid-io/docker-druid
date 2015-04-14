@@ -3,8 +3,8 @@ FROM ubuntu:14.04
 # Add Java 8 repository
 RUN apt-get update
 RUN apt-get install -y software-properties-common
-RUN apt-add-repository -y ppa:webupd8team/java
-RUN apt-get update
+RUN apt-add-repository -y ppa:webupd8team/java \
+      && apt-get update
 
 # Oracle Java 8
 RUN echo oracle-java-8-installer shared/accepted-oracle-license-v1-1 select true | /usr/bin/debconf-set-selections \
@@ -18,22 +18,22 @@ RUN apt-get install -y mysql-server
 RUN apt-get install -y supervisor
 
 # Maven
-RUN wget -q -O - http://www.us.apache.org/dist/maven/maven-3/3.2.5/binaries/apache-maven-3.2.5-bin.tar.gz | tar -xzf - -C /usr/local
-RUN ln -s /usr/local/apache-maven-3.2.5 /usr/local/apache-maven
-RUN ln -s /usr/local/apache-maven/bin/mvn /usr/local/bin/mvn
+RUN wget -q -O - http://archive.apache.org/dist/maven/maven-3/3.2.5/binaries/apache-maven-3.2.5-bin.tar.gz | tar -xzf - -C /usr/local \
+      && ln -s /usr/local/apache-maven-3.2.5 /usr/local/apache-maven \
+      && ln -s /usr/local/apache-maven/bin/mvn /usr/local/bin/mvn
 
 # Zookeeper
-RUN wget -q -O - http://www.us.apache.org/dist/zookeeper/zookeeper-3.4.6/zookeeper-3.4.6.tar.gz | tar -xzf - -C /usr/local
-RUN cp /usr/local/zookeeper-3.4.6/conf/zoo_sample.cfg /usr/local/zookeeper-3.4.6/conf/zoo.cfg
-RUN ln -s /usr/local/zookeeper-3.4.6 /usr/local/zookeeper
+RUN wget -q -O - http://www.us.apache.org/dist/zookeeper/zookeeper-3.4.6/zookeeper-3.4.6.tar.gz | tar -xzf - -C /usr/local \
+      && cp /usr/local/zookeeper-3.4.6/conf/zoo_sample.cfg /usr/local/zookeeper-3.4.6/conf/zoo.cfg \
+      && ln -s /usr/local/zookeeper-3.4.6 /usr/local/zookeeper
 
 # git
 RUN apt-get install -y git
 
 # Druid system user
-RUN adduser --system --group --no-create-home druid
-RUN mkdir -p /var/lib/druid
-RUN chown druid:druid /var/lib/druid
+RUN adduser --system --group --no-create-home druid \
+      && mkdir -p /var/lib/druid \
+      && chown druid:druid /var/lib/druid
 
 # Pre-cache Druid dependencies (this step is optional, but can help speed up re-building the Docker image)
 RUN mvn dependency:get -DremoteRepositories=https://metamx.artifactoryonline.com/metamx/pub-libs-releases-local -Dartifact=io.druid:druid-services:0.7.0-rc3
@@ -44,20 +44,23 @@ RUN mvn dependency:get -DremoteRepositories=https://metamx.artifactoryonline.com
 #RUN ln -s /usr/local/druid-services-$DRUID_VERSION /usr/local/druid
 
 # Druid (from source)
+RUN mkdir -p /usr/local/druid/lib /usr/local/druid/repository
 ENV DRUID_VERSION master
-RUN git config --global user.email docker@druid.io
 # trigger rebuild only if branch changed
 ADD https://api.github.com/repos/metamx/druid/git/refs/heads/$DRUID_VERSION druid-version.json
 RUN git clone -q --branch $DRUID_VERSION --depth 1 https://github.com/metamx/druid.git /tmp/druid
-RUN mkdir -p /usr/local/druid/lib /usr/local/druid/repository
 WORKDIR /tmp/druid
 # package and install Druid locally
-RUN mvn -U -B versions:set -DnewVersion=$DRUID_VERSION
-RUN mvn -U -B clean install -DskipTests=true -Dmaven.javadoc.skip=true
+RUN mvn -U -B versions:set -DnewVersion=$DRUID_VERSION \
+  && mvn -U -B clean install -DskipTests=true -Dmaven.javadoc.skip=true \
+  && cp services/target/druid-services-$DRUID_VERSION-selfcontained.jar /usr/local/druid/lib
 
-RUN cp -f services/target/druid-services-$DRUID_VERSION-selfcontained.jar /usr/local/druid/lib
 # pull dependencies for Druid extensions
-RUN java "-Ddruid.extensions.coordinates=[\"io.druid.extensions:druid-s3-extensions\", \"io.druid.extensions:mysql-metadata-storage\"]" -Ddruid.extensions.localRepository=/usr/local/druid/repository -Ddruid.extensions.remoteRepositories=[\"file:///root/.m2/repository/\",\"http://repo1.maven.org/maven2/\",\"https://metamx.artifactoryonline.com/metamx/pub-libs-releases-local\"] -cp /usr/local/druid/lib/* io.druid.cli.Main tools pull-deps
+RUN java "-Ddruid.extensions.coordinates=[\"io.druid.extensions:druid-s3-extensions\",\"io.druid.extensions:mysql-metadata-storage\"]" \
+      -Ddruid.extensions.localRepository=/usr/local/druid/repository \
+      -Ddruid.extensions.remoteRepositories=[\"file:///root/.m2/repository/\",\"https://repo1.maven.org/maven2/\"] \
+      -cp /usr/local/druid/lib/* \
+      io.druid.cli.Main tools pull-deps
 
 WORKDIR /
 
