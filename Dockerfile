@@ -8,8 +8,7 @@ RUN apt-add-repository -y ppa:webupd8team/java \
 
 # Oracle Java 8, MySQL, Supervisor, Git
 RUN echo oracle-java-8-installer shared/accepted-oracle-license-v1-1 select true | /usr/bin/debconf-set-selections \
-      && apt-get install -y oracle-java8-installer \
-      && apt-get install -y oracle-java8-set-default mysql-server supervisor git
+      && apt-get install -y oracle-java8-installer -y oracle-java8-set-default mysql-server supervisor git
 
 # Maven
 RUN wget -q -O - http://archive.apache.org/dist/maven/maven-3/3.2.5/binaries/apache-maven-3.2.5-bin.tar.gz | tar -xzf - -C /usr/local \
@@ -29,10 +28,6 @@ RUN adduser --system --group --no-create-home druid \
 # Pre-cache Druid dependencies (this step is optional, but can help speed up re-building the Docker image)
 RUN mvn dependency:get -Dartifact=io.druid:druid-services:0.7.1.1
 
-# Druid (release tarball)
-#ENV master 0.7.1.1
-#RUN wget -q -O - http://static.druid.io/artifacts/releases/druid-services-master-bin.tar.gz | tar -xzf - -C /usr/local
-#RUN ln -s /usr/local/druid-services-master /usr/local/druid
 
 # Druid (from source)
 RUN mkdir -p /usr/local/druid/lib /usr/local/druid/repository
@@ -77,4 +72,4 @@ EXPOSE 3306
 EXPOSE 2181 2888 3888
 
 WORKDIR /var/lib/druid
-#ENTRYPOINT export HOSTIP="$(resolveip -s $HOSTNAME)" && exec /usr/bin/supervisord -c /etc/supervisor/conf.d/supervisord.conf
+ENTRYPOINT export HOSTIP="$(resolveip -s $HOSTNAME)" && exec /usr/bin/supervisord -c /etc/supervisor/conf.d/supervisord.conf
