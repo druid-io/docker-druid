@@ -8,7 +8,7 @@ RUN apt-add-repository -y ppa:webupd8team/java \
 
 # Oracle Java 8, MySQL, Supervisor, Git
 RUN echo oracle-java-8-installer shared/accepted-oracle-license-v1-1 select true | /usr/bin/debconf-set-selections \
-      && apt-get install -y oracle-java8-installer -y oracle-java8-set-default mysql-server supervisor git
+      && apt-get install -y oracle-java8-installer oracle-java8-set-default mysql-server supervisor git
 
 # Maven
 RUN wget -q -O - http://archive.apache.org/dist/maven/maven-3/3.2.5/binaries/apache-maven-3.2.5-bin.tar.gz | tar -xzf - -C /usr/local \
