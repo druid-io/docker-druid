@@ -58,7 +58,7 @@ ADD supervisord.conf /etc/supervisor/conf.d/supervisord.conf
 
 ## Clean up
 RUN apt-get clean && rm -rf /tmp/* /var/tmp/*
-
+RUN chown -R druid:druid /usr/local/druid
 ## Expose ports:
 ## - 8081: HTTP (coordinator)
 ## - 8082: HTTP (broker)
