@@ -36,7 +36,7 @@ RUN adduser --system --group --no-create-home druid \
       && chown druid:druid /var/lib/druid
 
 # Pre-cache Druid dependencies (this step is optional, but can help speed up re-building the Docker image)
-RUN mvn dependency:get -Dartifact=io.druid:druid-services:0.7.1.1
+RUN mvn dependency:get -Dartifact=io.druid:druid-services:0.7.2
 
 # Druid (release tarball)
 #ENV DRUID_VERSION 0.7.1.1
@@ -45,13 +45,18 @@ RUN mvn dependency:get -Dartifact=io.druid:druid-services:0.7.1.1
 
 # Druid (from source)
 RUN mkdir -p /usr/local/druid/lib /usr/local/druid/repository
+# whichever repository you would like to build from
+ENV REPOSITORY druid-io
+# whichever branch you would like to build
 ENV DRUID_VERSION master
+
 # trigger rebuild only if branch changed
-ADD https://api.github.com/repos/metamx/druid/git/refs/heads/$DRUID_VERSION druid-version.json
-RUN git clone -q --branch $DRUID_VERSION --depth 1 https://github.com/metamx/druid.git /tmp/druid
+ADD https://api.github.com/repos/$REPOSITORY/druid/git/refs/heads/$DRUID_VERSION druid-version.json
+RUN git clone -q --branch $DRUID_VERSION --depth 1 https://github.com/$REPOSITORY/druid.git /tmp/druid
 WORKDIR /tmp/druid
 # package and install Druid locally
-RUN mvn -U -B versions:set -DnewVersion=$DRUID_VERSION \
+# use versions-maven-plugin 2.1 to work around https://jira.codehaus.org/browse/MVERSIONS-285
+RUN mvn -U -B org.codehaus.mojo:versions-maven-plugin:2.1:set -DgenerateBackupPoms=false -DnewVersion=$DRUID_VERSION \
   && mvn -U -B clean install -DskipTests=true -Dmaven.javadoc.skip=true \
   && cp services/target/druid-services-$DRUID_VERSION-selfcontained.jar /usr/local/druid/lib
 
@@ -65,7 +70,7 @@ RUN java "-Ddruid.extensions.coordinates=[\"io.druid.extensions:druid-s3-extensi
 WORKDIR /
 
 # Setup metadata store
-RUN /etc/init.d/mysql start && echo "GRANT ALL ON druid.* TO 'druid'@'localhost' IDENTIFIED BY 'diurd'; CREATE database druid CHARACTER SET utf8;" | mysql -u root && /etc/init.d/mysql stop
+RUN /etc/init.d/mysql start && mysql -u root -e "GRANT ALL ON druid.* TO 'druid'@'localhost' IDENTIFIED BY 'diurd'; CREATE database druid CHARACTER SET utf8;" && /etc/init.d/mysql stop
 
 # Add sample data
 RUN /etc/init.d/mysql start && java -cp /usr/local/druid/lib/druid-services-*-selfcontained.jar -Ddruid.extensions.coordinates=[\"io.druid.extensions:mysql-metadata-storage\"] -Ddruid.metadata.storage.type=mysql io.druid.cli.Main tools metadata-init --connectURI="jdbc:mysql://localhost:3306/druid" --user=druid --password=diurd && /etc/init.d/mysql stop
