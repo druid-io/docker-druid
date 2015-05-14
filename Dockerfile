@@ -41,7 +41,7 @@ RUN mvn -U -B clean install -DskipTests=true -Dmaven.javadoc.skip=true \
 
 # pull dependencies for Druid extensions
 
-RUN /bin/bash -c 'java "-Ddruid.extensions.coordinates=[\"io.druid.extensions:druid-s3-extensions\",\"io.druid.extensions:mysql-metadata-storage\"]" -Ddruid.extensions.localRepository=/usr/local/druid/repository -Ddruid.extensions.remoteRepositories=[\"file:///root/.m2/repository/\",\"https://repo1.maven.org/maven2/\"] -cp /usr/local/druid/lib/* io.druid.cli.Main tools pull-deps'
+RUN /bin/bash -c 'java "-Ddruid.extensions.coordinates=[\"io.druid.extensions:druid-s3-extensions\",\"io.druid.extensions:mysql-metadata-storage\", \"io.druid.extensions:druid-kafka-eight\"]" -Ddruid.extensions.localRepository=/usr/local/druid/repository -Ddruid.extensions.remoteRepositories=[\"file:///root/.m2/repository/\",\"https://repo1.maven.org/maven2/\"] -cp /usr/local/druid/lib/* io.druid.cli.Main tools pull-deps'
 
 #
 ## Setup metadata store
