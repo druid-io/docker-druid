@@ -26,7 +26,7 @@ RUN adduser --system --group --no-create-home druid \
       && chown druid:druid /var/lib/druid
 
 # Pre-cache Druid dependencies (this step is optional, but can help speed up re-building the Docker image)
-RUN mvn dependency:get -Dartifact=io.druid:druid-services:0.7.1.1
+#RUN mvn dependency:get -Dartifact=io.druid:druid-services:0.7.1.1
 
 
 # Druid (from source)
