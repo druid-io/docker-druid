@@ -45,14 +45,14 @@ RUN mvn dependency:get -Dartifact=io.druid:druid-services:0.7.2
 
 # Druid (from source)
 RUN mkdir -p /usr/local/druid/lib /usr/local/druid/repository
-# whichever repository you would like to build from
-ENV REPOSITORY druid-io
+# whichever github owner (user or org name) you would like to build from
+ENV GITHUB_OWNER druid-io
 # whichever branch you would like to build
 ENV DRUID_VERSION master
 
 # trigger rebuild only if branch changed
-ADD https://api.github.com/repos/$REPOSITORY/druid/git/refs/heads/$DRUID_VERSION druid-version.json
-RUN git clone -q --branch $DRUID_VERSION --depth 1 https://github.com/$REPOSITORY/druid.git /tmp/druid
+ADD https://api.github.com/repos/$GITHUB_OWNER/druid/git/refs/heads/$DRUID_VERSION druid-version.json
+RUN git clone -q --branch $DRUID_VERSION --depth 1 https://github.com/$GITHUB_OWNER/druid.git /tmp/druid
 WORKDIR /tmp/druid
 # package and install Druid locally
 # use versions-maven-plugin 2.1 to work around https://jira.codehaus.org/browse/MVERSIONS-285
