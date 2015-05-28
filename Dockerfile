@@ -8,7 +8,7 @@ RUN apt-add-repository -y ppa:webupd8team/java \
 
 # Oracle Java 8, MySQL, Supervisor, Git
 RUN echo oracle-java-8-installer shared/accepted-oracle-license-v1-1 select true | /usr/bin/debconf-set-selections \
-      && apt-get install -y oracle-java8-installer oracle-java8-set-default mysql-server supervisor git
+      && apt-get install -y oracle-java8-installer oracle-java8-set-default mysql-server supervisor git curl
 
 # Maven
 RUN wget -q -O - http://archive.apache.org/dist/maven/maven-3/3.2.5/binaries/apache-maven-3.2.5-bin.tar.gz | tar -xzf - -C /usr/local \
@@ -22,7 +22,7 @@ RUN wget -q -O - http://www.us.apache.org/dist/zookeeper/zookeeper-3.4.6/zookeep
 
 # Druid system user
 RUN adduser --system --group --no-create-home druid \
-      && mkdir -p /var/lib/druid \
+      && mkdir -p /var/lib/druid/log \
       && chown druid:druid /var/lib/druid
 
 # Pre-cache Druid dependencies (this step is optional, but can help speed up re-building the Docker image)
@@ -72,4 +72,3 @@ EXPOSE 3306
 EXPOSE 2181 2888 3888
 
 WORKDIR /var/lib/druid
-#ENTRYPOINT export HOSTIP="$(resolveip -s $HOSTNAME)" && exec /usr/bin/supervisord -c /etc/supervisor/conf.d/supervisord.conf
