@@ -37,7 +37,7 @@ RUN git clone -q --branch master --depth 1 https://github.com/metamx/druid.git /
 WORKDIR /tmp/druid
 # package and install Druid locally
 RUN mvn -U -B clean install -DskipTests=true -Dmaven.javadoc.skip=true \
-  && cp services/target/druid-services-0.7.2-SNAPSHOT-selfcontained.jar /usr/local/druid/lib
+  && cp services/target/druid-services-0.8.0-SNAPSHOT-selfcontained.jar /usr/local/druid/lib
 
 # pull dependencies for Druid extensions
 
