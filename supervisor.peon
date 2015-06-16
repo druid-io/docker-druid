@@ -1,0 +1,25 @@
+[supervisord]
+nodaemon=true
+loglevel=debug
+
+
+[program:druid-peon]
+user=root
+command=java
+  -server
+  -Xmx4g
+  -Duser.timezone=UTC
+  -Dfile.encoding=UTF-8
+  -Ddruid.host=172.17.0.36
+  -Ddruid.segmentCache.locations="[{\"path\":\"/var/tmp/druid/indexCache\",\"maxSize\":5000000000}]"
+  -Ddruid.zk.service.host=172.17.0.35
+  -Ddruid.extensions.coordinates=[\"io.druid.extensions:mysql-metadata-storage\"]
+  -Ddruid.extensions.localRepository=/usr/local/druid/repository
+  -Ddruid.metadata.storage.type=mysql
+  -Ddruid.metadata.storage.connector.connectURI=jdbc:mysql://172.17.42.1:3306/druid
+  -Ddruid.metadata.storage.connector.user=druid
+  -Ddruid.metadata.storage.connector.password=diurd
+  -Ddruid.processing.numThreads=2
+  -Ddruid.peon.mode=remote
+  -cp /usr/local/druid/lib/*
+  io.druid.cli.Main server historical 
