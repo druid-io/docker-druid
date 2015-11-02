@@ -44,7 +44,7 @@ RUN mvn dependency:get -Dartifact=io.druid:druid-services:0.7.2
 #RUN ln -s /usr/local/druid-services-$DRUID_VERSION /usr/local/druid
 
 # Druid (from source)
-RUN mkdir -p /usr/local/druid/lib /usr/local/druid/repository
+RUN mkdir -p /usr/local/druid/lib
 # whichever github owner (user or org name) you would like to build from
 ENV GITHUB_OWNER druid-io
 # whichever branch you would like to build
@@ -60,12 +60,8 @@ RUN mvn -U -B org.codehaus.mojo:versions-maven-plugin:2.1:set -DgenerateBackupPo
   && mvn -U -B clean install -DskipTests=true -Dmaven.javadoc.skip=true \
   && cp services/target/druid-services-$DRUID_VERSION-selfcontained.jar /usr/local/druid/lib
 
-# pull dependencies for Druid extensions
-RUN java "-Ddruid.extensions.coordinates=[\"io.druid.extensions:druid-s3-extensions\",\"io.druid.extensions:mysql-metadata-storage\"]" \
-      -Ddruid.extensions.localRepository=/usr/local/druid/repository \
-      -Ddruid.extensions.remoteRepositories=[\"file:///root/.m2/repository/\",\"https://repo1.maven.org/maven2/\"] \
-      -cp /usr/local/druid/lib/* \
-      io.druid.cli.Main tools pull-deps
+RUN cp -r distribution/target/extensions /usr/local/druid/
+RUN cp -r distribution/target/hadoop_dependencies /usr/local/druid/
 
 WORKDIR /
 
@@ -73,7 +69,7 @@ WORKDIR /
 RUN /etc/init.d/mysql start && mysql -u root -e "GRANT ALL ON druid.* TO 'druid'@'localhost' IDENTIFIED BY 'diurd'; CREATE database druid CHARACTER SET utf8;" && /etc/init.d/mysql stop
 
 # Add sample data
-RUN /etc/init.d/mysql start && java -cp /usr/local/druid/lib/druid-services-*-selfcontained.jar -Ddruid.extensions.coordinates=[\"io.druid.extensions:mysql-metadata-storage\"] -Ddruid.metadata.storage.type=mysql io.druid.cli.Main tools metadata-init --connectURI="jdbc:mysql://localhost:3306/druid" --user=druid --password=diurd && /etc/init.d/mysql stop
+RUN /etc/init.d/mysql start && java -cp /usr/local/druid/lib/druid-services-*-selfcontained.jar -Ddruid.extensions.directory=/usr/local/druid/extensions -Ddruid.extensions.loadList=[\"mysql-metadata-storage\"] -Ddruid.metadata.storage.type=mysql io.druid.cli.Main tools metadata-init --connectURI="jdbc:mysql://localhost:3306/druid" --user=druid --password=diurd && /etc/init.d/mysql stop
 ADD sample-data.sql sample-data.sql
 RUN /etc/init.d/mysql start && cat sample-data.sql | mysql -u root druid && /etc/init.d/mysql stop
 
