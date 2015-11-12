@@ -5,7 +5,7 @@
 [Install Homebrew](http://brew.sh/#install)
 
 ```sh
-ruby -e "$(curl -fsSL https://raw.github.com/Homebrew/homebrew/go/install)"
+ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
 ```
 
 [Install Cask](http://caskroom.io/)
@@ -25,16 +25,15 @@ Boot2Docker
 
 ```sh
 brew update
-brew install boot2docker
-boot2docker init
-boot2docker up
-eval "$(boot2docker shellinit)"
+brew install docker-machine docker
+docker-machine create --driver virtualbox default
+eval "$(docker-machine env default)"
 ```
 
-Is it running?
+Is it working?
 
 ```
-docker info
+docker run hello-world
 ```
 
 [build druid-docker](README.md)
