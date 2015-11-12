@@ -12,7 +12,7 @@ docker build -t docker-druid docker-druid
 ## Run a simple Druid cluster
 
 ```sh
-docker run --rm -i -p 3000:8082 -p 3001:8081 -p 3001:8090 docker-druid
+docker run --rm -i -p 3000:8082 -p 3001:8081 -p 3090:8090 docker-druid
 ```
 
 Wait a minute or so for the Druid to download the sample data an start up.
