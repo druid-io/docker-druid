@@ -83,11 +83,13 @@ RUN apt-get clean && rm -rf /tmp/* /var/tmp/*
 # - 8081: HTTP (coordinator)
 # - 8082: HTTP (broker)
 # - 8083: HTTP (historical)
+# - 8090: HTTP (overlord)
 # - 3306: MySQL
 # - 2181 2888 3888: ZooKeeper
 EXPOSE 8081
 EXPOSE 8082
 EXPOSE 8083
+EXPOSE 8090
 EXPOSE 3306
 EXPOSE 2181 2888 3888
 
