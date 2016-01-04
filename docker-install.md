@@ -21,7 +21,7 @@ brew update
 brew cask install virtualbox
 ```
 
-Boot2Docker
+Docker Machine
 
 ```sh
 brew update
