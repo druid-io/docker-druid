@@ -8,7 +8,7 @@ Download and launch the docker image
 
 ```sh
 docker pull druidio/example-cluster
-docker run --rm -i -p 3000:8082 -p 3001:8081 -p 3090:8090 example-cluster
+docker run --rm -i -p 3000:8082 -p 3001:8081 -p 3090:8090 druidio/example-cluster
 ```
 
 Wait a minute or so for Druid to start up and download the sample.
