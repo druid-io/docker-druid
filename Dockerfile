@@ -57,7 +57,7 @@ RUN mvn -U -B org.codehaus.mojo:versions-maven-plugin:2.1:set -DgenerateBackupPo
   && cp services/target/druid-services-$DRUID_VERSION-selfcontained.jar /usr/local/druid/lib
 
 RUN cp -r distribution/target/extensions /usr/local/druid/
-RUN cp -r distribution/target/hadoop_dependencies /usr/local/druid/
+RUN cp -r distribution/target/hadoop-dependencies /usr/local/druid/
 
 # clean up time
 RUN apt-get purge --auto-remove -y git \
