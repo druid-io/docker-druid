@@ -36,8 +36,8 @@ RUN adduser --system --group --no-create-home druid \
 
 # Druid (release tarball)
 #ENV DRUID_VERSION 0.7.1.1
-#RUN wget -q -O - http://static.druid.io/artifacts/releases/druid-services-$DRUID_VERSION-bin.tar.gz | tar -xzf - -C /usr/local
-#RUN ln -s /usr/local/druid-services-$DRUID_VERSION /usr/local/druid
+#RUN wget -q -O - http://static.druid.io/artifacts/releases/druid-$DRUID_VERSION-bin.tar.gz | tar -xzf - -C /usr/local
+#RUN ln -s /usr/local/druid-$DRUID_VERSION /usr/local/druid
 
 # Druid (from source)
 RUN mkdir -p /usr/local/druid/lib
