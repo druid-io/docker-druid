@@ -74,7 +74,7 @@ WORKDIR /
 # Setup metadata store and add sample data
 ADD sample-data.sql sample-data.sql
 RUN /etc/init.d/mysql start \
-      && mysql -u root -e "GRANT ALL ON druid.* TO 'druid'@'localhost' IDENTIFIED BY 'diurd'; CREATE database druid CHARACTER SET utf8;" \
+      && mysql -u root -e "GRANT ALL ON druid.* TO 'druid'@'localhost' IDENTIFIED BY 'druid'; CREATE database druid CHARACTER SET utf8;" \
       && java -cp /usr/local/druid/lib/druid-services-*-selfcontained.jar \
           -Ddruid.extensions.directory=/usr/local/druid/extensions \
           -Ddruid.extensions.loadList=[\"mysql-metadata-storage\"] \
