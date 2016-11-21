@@ -1,0 +1,5 @@
+druid.service=druid/coordinator
+druid.port={{ coordinator_node_port }}
+
+druid.coordinator.startDelay=PT30S
+druid.coordinator.period=PT30S

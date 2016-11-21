@@ -1,0 +1,7 @@
+druid.service=druid/overlord
+druid.port={{ overlord_node_port }}
+
+druid.indexer.queue.startDelay=PT30S
+
+druid.indexer.runner.type=remote
+druid.indexer.storage.type=metadata

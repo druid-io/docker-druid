@@ -1,0 +1,22 @@
+FROM {{ docker_hub_username }}/druid-base:{{ image_tag }}
+
+ENV CONTAINER_NAME historical
+
+RUN echo "[supervisord]\n\
+nodaemon=true\n\
+loglevel=debug\n\
+[program:druid-historical]\n\
+user=druid\n\
+command=java\n\
+  -Xmx256m\n\
+  -XX:MaxDirectMemorySize=4096m\n\
+  -Dlogfilename=historical\n\
+  -Duser.timezone=UTC\n\
+  -Dfile.encoding=UTF-8\n\
+  -classpath '{{ common_conf_dir }}/druid/_common:{{ common_conf_dir }}/druid/historical:lib/*'\n\
+  io.druid.cli.Main server historical\n\
+priority=1" > /etc/supervisor/conf.d/supervisord.conf
+
+ENTRYPOINT export HOSTIP="$(resolveip -s $HOSTNAME)" && exec /usr/bin/supervisord -c /etc/supervisor/conf.d/supervisord.conf
+
+EXPOSE {{ historical_node_port }}

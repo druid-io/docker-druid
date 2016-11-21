@@ -1,0 +1,20 @@
+FROM {{ docker_hub_username }}/ubuntu-java8:{{ image_tag }}
+
+RUN mkdir -p /usr/local/dependencies
+WORKDIR /usr/local/dependencies
+RUN wget http://www-eu.apache.org/dist/zookeeper/stable/zookeeper-3.4.9.tar.gz \
+      && tar -xf /usr/local/dependencies/zookeeper-3.4.9.tar.gz \
+      && mv /usr/local/dependencies/zookeeper-3.4.9 /usr/local/dependencies/zookeeper \
+      && cp /usr/local/dependencies/zookeeper/conf/zoo_sample.cfg /usr/local/dependencies/zookeeper/conf/zoo.cfg
+
+RUN echo "[supervisord]\n\
+nodaemon=true\n\
+loglevel=debug\n\
+[program:zookeeper]\n\
+user=daemon\n\
+command=/usr/local/dependencies/zookeeper/bin/zkServer.sh start-foreground\n\
+priority=1" > /etc/supervisor/conf.d/supervisord.conf
+
+ENTRYPOINT export HOSTIP="$(resolveip -s $HOSTNAME)" && exec /usr/bin/supervisord -c /etc/supervisor/conf.d/supervisord.conf
+
+EXPOSE 2181 2888 3888

@@ -1,0 +1,7 @@
+FROM {{ docker_hub_username }}/ubuntu-java8:{{ image_tag }}
+
+# Place conf and scripts
+ADD ./generated/conf/ {{ common_conf_dir }}
+
+# Mounting point for external configs and scripts
+VOLUME ["{{ common_conf_dir }}"]

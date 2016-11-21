@@ -1,0 +1,22 @@
+FROM {{ docker_hub_username }}/druid-base:{{ image_tag }}
+
+ENV CONTAINER_NAME realtime
+
+RUN echo "[supervisord]\n\
+nodaemon=true\n\
+loglevel=debug\n\
+[program:druid-realtime]\n\
+user=druid\n\
+command=java\n\
+  -Xmx512m\n\
+  -Dlogfilename=realtime\n\
+  -Duser.timezone=UTC\n\
+  -Dfile.encoding=UTF-8\n\
+  -XX:MaxDirectMemorySize=4096m\n\
+  -classpath '{{ common_conf_dir }}/druid/_common:{{ common_conf_dir }}/druid/realtime:lib/*'\n\
+  io.druid.cli.Main server realtime\n\
+priority=1" > /etc/supervisor/conf.d/supervisord.conf
+
+ENTRYPOINT export HOSTIP="$(resolveip -s $HOSTNAME)" && exec /usr/bin/supervisord -c /etc/supervisor/conf.d/supervisord.conf
+
+EXPOSE {{ realtime_node_port }}

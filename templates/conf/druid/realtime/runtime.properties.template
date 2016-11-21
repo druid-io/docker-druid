@@ -1,0 +1,9 @@
+druid.service=druid/realtime
+druid.port={{ realtime_node_port }}
+
+druid.processing.buffer.sizeBytes=1073741824
+druid.processing.numThreads=7
+
+druid.server.http.numThreads=50
+
+druid.monitoring.monitors=["io.druid.segment.realtime.RealtimeMetricsMonitor", "com.metamx.metrics.JvmMonitor"]
