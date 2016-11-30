@@ -1,0 +1,16 @@
+#!/bin/bash -e
+
+eval $(docker-machine env --swarm d-druid-swarm-master)
+docker run -itd --name=zookeeper --network={{ overlay_net }} --env="constraint:node==d-node-1" {{ docker_hub_username }}/druid-zookeeper:{{ image_tag }}
+docker run -itd --name=mysql -e MYSQL_ROOT_PASSWORD=root -e MYSQL_DATABASE=druid -e MYSQL_USER=druid -e MYSQL_PASSWORD=diurd --network=d-my-net --env="constraint:node==d-node-2" mysql:latest --character-set-server=utf8 --collation-server=utf8_general_ci
+for i in `seq 1 2`;
+do
+  docker run -itd --name=node-$i-conf --network={{ overlay_net }} --env="constraint:node==d-node-$i" {{ docker_hub_username }}/druid-conf:{{ image_tag }}
+done
+
+docker run -itd --volumes-from=node-1-conf -p {{ coordinator_node_port }}:{{ coordinator_node_port }} --name=coordinator --network={{ overlay_net }} --env="constraint:node==d-node-1" {{ docker_hub_username }}/druid-coordinator:{{ image_tag }}
+docker run -itd --volumes-from=node-1-conf -p {{ overlord_node_port }}:{{ overlord_node_port }} --name=overlord --network={{ overlay_net }} --env="constraint:node==d-node-1" {{ docker_hub_username }}/druid-overlord:{{ image_tag }}
+docker run -itd --volumes-from=node-1-conf --name=middlemanager --network={{ overlay_net }} --env="constraint:node==d-node-1" {{ docker_hub_username }}/druid-middlemanager:{{ image_tag }}
+docker run -itd --volumes-from=node-2-conf --name=broker --network={{ overlay_net }} --env="constraint:node==d-node-2" {{ docker_hub_username }}/druid-broker:{{ image_tag }}
+docker run -itd -v {{ deep_storage_dir }}:{{ deep_storage_dir }} --volumes-from=node-2-conf --name=realtime --network={{ overlay_net }} --env="constraint:node==d-node-2" {{ docker_hub_username }}/druid-realtime:{{ image_tag }}
+docker run -itd -v {{ deep_storage_dir }}:{{ deep_storage_dir }} --volumes-from=node-2-conf --name=historical --network={{ overlay_net }} --env="constraint:node==d-node-2" {{ docker_hub_username }}/druid-historical:{{ image_tag }}

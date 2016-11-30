@@ -1,0 +1,7 @@
+#!/bin/bash -e
+
+# Build conf and script images
+docker build -f ./generated/dockerfiles/Dockerfile-conf -t {{docker_hub_username}}/druid-conf:{{ image_tag }} .
+
+# Push docker images to hub
+docker push {{docker_hub_username}}/druid-conf:{{ image_tag }}

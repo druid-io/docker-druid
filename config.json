@@ -1,0 +1,25 @@
+{
+  "docker_hub_username": "xiaoyao1991",
+  "image_tag": "latest",
+  "overlay_net": "d-my-net",
+  "common_conf_dir": "/usr/local/conf",
+  "deep_storage_dir": "/var/druid-segments",
+
+  "coordinator_node_port": 8080,
+  "coordinator_node_aliases": ["coordinator"],
+
+  "historical_node_port": 8081,
+  "historical_node_aliases": ["historical"],
+
+  "broker_node_port": 8082,
+  "broker_node_aliases": ["broker"],
+
+  "realtime_node_port": 8083,
+  "realtime_node_aliases": ["realtime"],
+
+  "overlord_node_port": 8084,
+  "overlord_node_aliases": ["overlord"],
+
+  "middle_manager_node_port": 8085,
+  "middle_manager_node_aliases": ["middlemanager"]
+}

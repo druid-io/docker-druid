@@ -1,0 +1,6 @@
+.python-version
+generated/*
+build-all.sh
+build-conf.sh
+deploy.sh
+provision.sh

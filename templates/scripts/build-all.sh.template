@@ -1,0 +1,26 @@
+#!/bin/bash -e
+
+# Build docker images
+docker build -f ./generated/dockerfiles/Dockerfile-ubuntu-java8 -t {{ docker_hub_username }}/ubuntu-java8:{{ image_tag }} .
+docker build -f ./generated/dockerfiles/Dockerfile-conf -t {{ docker_hub_username }}/druid-conf:{{ image_tag }} .
+
+docker build -f ./generated/dockerfiles/Dockerfile-druid-base -t {{ docker_hub_username }}/druid-base:{{ image_tag }} .
+docker build -f ./generated/dockerfiles/Dockerfile-broker -t {{ docker_hub_username }}/druid-broker:{{ image_tag }} .
+docker build -f ./generated/dockerfiles/Dockerfile-coordinator -t {{ docker_hub_username }}/druid-coordinator:{{ image_tag }} .
+docker build -f ./generated/dockerfiles/Dockerfile-historical -t {{ docker_hub_username }}/druid-historical:{{ image_tag }} .
+docker build -f ./generated/dockerfiles/Dockerfile-middlemanager -t {{ docker_hub_username }}/druid-middlemanager:{{ image_tag }} .
+docker build -f ./generated/dockerfiles/Dockerfile-overlord -t {{ docker_hub_username }}/druid-overlord:{{ image_tag }} .
+docker build -f ./generated/dockerfiles/Dockerfile-realtime -t {{ docker_hub_username }}/druid-realtime:{{ image_tag }} .
+docker build -f ./generated/dockerfiles/Dockerfile-zookeeper -t {{ docker_hub_username }}/druid-zookeeper:{{ image_tag }} .
+
+# Push docker images to hub
+docker push {{ docker_hub_username }}/ubuntu-java8:{{ image_tag }}
+docker push {{ docker_hub_username }}/druid-conf:{{ image_tag }}
+docker push {{ docker_hub_username }}/druid-base:{{ image_tag }}
+docker push {{ docker_hub_username }}/druid-zookeeper:{{ image_tag }}
+docker push {{ docker_hub_username }}/druid-realtime:{{ image_tag }}
+docker push {{ docker_hub_username }}/druid-overlord:{{ image_tag }}
+docker push {{ docker_hub_username }}/druid-middlemanager:{{ image_tag }}
+docker push {{ docker_hub_username }}/druid-historical:{{ image_tag }}
+docker push {{ docker_hub_username }}/druid-coordinator:{{ image_tag }}
+docker push {{ docker_hub_username }}/druid-broker:{{ image_tag }}
