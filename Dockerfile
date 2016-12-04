@@ -1,7 +1,8 @@
 FROM ubuntu:14.04
 
 # Java 8
-RUN apt-get install -y software-properties-common \
+RUN  apt-get update \
+      && apt-get install -y software-properties-common \
       && apt-add-repository -y ppa:webupd8team/java \
       && apt-get purge --auto-remove -y software-properties-common \
       && apt-get update \
