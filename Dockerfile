@@ -3,7 +3,7 @@ FROM ubuntu:14.04
 ENV ZOOKEEPER_VERSION 3.4.9
 
 # Java 8
-RUN apt-get update -y \
+RUN apt-get update \
       && apt-get install -y software-properties-common \
       && apt-add-repository -y ppa:webupd8team/java \
       && apt-get purge --auto-remove -y software-properties-common \
