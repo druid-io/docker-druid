@@ -1,5 +1,7 @@
 FROM ubuntu:14.04
 
+ENV ZOOKEEPER_VERSION 3.4.9
+
 # Java 8
 RUN apt-get install -y software-properties-common \
       && apt-add-repository -y ppa:webupd8team/java \
@@ -25,9 +27,9 @@ RUN wget -q -O - http://archive.apache.org/dist/maven/maven-3/3.2.5/binaries/apa
       && ln -s /usr/local/apache-maven/bin/mvn /usr/local/bin/mvn
 
 # Zookeeper
-RUN wget -q -O - http://www.us.apache.org/dist/zookeeper/zookeeper-3.4.6/zookeeper-3.4.6.tar.gz | tar -xzf - -C /usr/local \
-      && cp /usr/local/zookeeper-3.4.6/conf/zoo_sample.cfg /usr/local/zookeeper-3.4.6/conf/zoo.cfg \
-      && ln -s /usr/local/zookeeper-3.4.6 /usr/local/zookeeper
+RUN wget -q -O - http://www.us.apache.org/dist/zookeeper/zookeeper-$ZOOKEEPER_VERSION/zookeeper-$ZOOKEEPER_VERSION.tar.gz | tar -xzf - -C /usr/local \
+      && cp /usr/local/zookeeper-$ZOOKEEPER_VERSION/conf/zoo_sample.cfg /usr/local/zookeeper-$ZOOKEEPER_VERSION/conf/zoo.cfg \
+      && ln -s /usr/local/zookeeper-$ZOOKEEPER_VERSION /usr/local/zookeeper
 
 # Druid system user
 RUN adduser --system --group --no-create-home druid \
