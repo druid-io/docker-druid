@@ -67,7 +67,9 @@ RUN apt-get purge --auto-remove -y git \
                 /var/lib/apt/lists \
                 /usr/local/apache-maven-3.2.5 \
                 /usr/local/apache-maven \
-                /root/.m2
+                /root/.m2 \
+      && mkdir -p /tmp/druid/localStorage/ \
+      && chown druid:druid /tmp/druid/localStorage/
 
 WORKDIR /
 
