@@ -1,7 +1,8 @@
 FROM ubuntu:14.04
 
 # Java 8
-RUN apt-get install -y software-properties-common \
+RUN apt-get update -y \
+      && apt-get install -y software-properties-common \
       && apt-add-repository -y ppa:webupd8team/java \
       && apt-get purge --auto-remove -y software-properties-common \
       && apt-get update \
@@ -34,15 +35,12 @@ RUN adduser --system --group --no-create-home druid \
       && mkdir -p /var/lib/druid \
       && chown druid:druid /var/lib/druid
 
-# Druid (release tarball)
-#ENV DRUID_VERSION 0.7.1.1
-#RUN wget -q -O - http://static.druid.io/artifacts/releases/druid-services-$DRUID_VERSION-bin.tar.gz | tar -xzf - -C /usr/local
-#RUN ln -s /usr/local/druid-services-$DRUID_VERSION /usr/local/druid
-
 # Druid (from source)
 RUN mkdir -p /usr/local/druid/lib
+
 # whichever github owner (user or org name) you would like to build from
 ENV GITHUB_OWNER druid-io
+
 # whichever branch you would like to build
 ENV DRUID_VERSION master
 
