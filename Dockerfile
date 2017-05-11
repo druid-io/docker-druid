@@ -2,7 +2,7 @@ FROM ubuntu:14.04
 
 # Set version and github repo which you want to build from
 ENV GITHUB_OWNER druid-io
-ENV DRUID_VERSION 0.9.2
+ENV DRUID_VERSION master
 ENV ZOOKEEPER_VERSION 3.4.9
 
 # Java 8
@@ -16,6 +16,7 @@ RUN apt-get update \
                             mysql-server \
                             supervisor \
                             git \
+                            python-pip \
       && apt-get clean \
       && rm -rf /var/cache/oracle-jdk8-installer \
       && rm -rf /var/lib/apt/lists/*
@@ -60,8 +61,7 @@ RUN mvn -U -B org.codehaus.mojo:versions-maven-plugin:2.1:set -DgenerateBackupPo
 
 WORKDIR /
 
-# Setup metadata store and add sample data
-ADD sample-data.sql sample-data.sql
+# Setup metadata store
 RUN /etc/init.d/mysql start \
       && mysql -u root -e "GRANT ALL ON druid.* TO 'druid'@'localhost' IDENTIFIED BY 'diurd'; CREATE database druid CHARACTER SET utf8;" \
       && java -cp /usr/local/druid/lib/druid-services-*-selfcontained.jar \
@@ -71,7 +71,6 @@ RUN /etc/init.d/mysql start \
           io.druid.cli.Main tools metadata-init \
               --connectURI="jdbc:mysql://localhost:3306/druid" \
               --user=druid --password=diurd \
-      && mysql -u root druid < sample-data.sql \
       && /etc/init.d/mysql stop
 
 # Setup supervisord
@@ -91,5 +90,19 @@ EXPOSE 8090
 EXPOSE 3306
 EXPOSE 2181 2888 3888
 
+# Mount the data inside of the container
+ADD ./ingestion/ /ingestion/
+
 WORKDIR /var/lib/druid
-ENTRYPOINT export HOSTIP="$(resolveip -s $HOSTNAME)" && exec /usr/bin/supervisord -c /etc/supervisor/conf.d/supervisord.conf
+
+# Create directories used for storing the segments
+# Start Druid, and run an ingestion job, wait until the job is done and data is a available, then shut Druid down
+RUN mkdir -p /tmp/druid/localStorage/ \
+ && chown druid:druid /tmp/druid/localStorage/ \
+ && cat /etc/supervisor/conf.d/supervisord.conf | sed 's/nodaemon=true/nodaemon=false/g' > /tmp/supervisord-no-deamon.conf \
+ && export HOSTIP="$(resolveip -s $HOSTNAME)" && /usr/bin/supervisord -c /tmp/supervisord-no-deamon.conf \
+ && pip install -r /ingestion/requirements.txt \
+ && /ingestion/provision.py --file /ingestion/wikiticker-index.json \
+ && supervisorctl -c /etc/supervisor/conf.d/supervisord.conf shutdown
+
+CMD export HOSTIP="$(resolveip -s $HOSTNAME)" && exec /usr/bin/supervisord -c /etc/supervisor/conf.d/supervisord.conf
