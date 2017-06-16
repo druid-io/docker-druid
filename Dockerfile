@@ -41,6 +41,7 @@ RUN mkdir -p /usr/local/druid/lib
 # trigger rebuild only if branch changed
 ADD https://api.github.com/repos/$GITHUB_OWNER/druid/git/refs/heads/$DRUID_VERSION druid-version.json
 RUN git clone -q --branch $DRUID_VERSION --depth 1 https://github.com/$GITHUB_OWNER/druid.git /tmp/druid
+ADD config-quickstart  /tmp/druid/examples/conf-quickstart
 WORKDIR /tmp/druid
 
 # package and install Druid locally
@@ -76,6 +77,18 @@ RUN /etc/init.d/mysql start \
 
 # Setup supervisord
 ADD supervisord.conf /etc/supervisor/conf.d/supervisord.conf
+ADD broker-supervisord.conf /etc/supervisor/conf.d/broker-supervisord.conf
+ADD coordinator-supervisord.conf /etc/supervisor/conf.d/coordinator-supervisord.conf
+ADD historical-supervisord.conf /etc/supervisor/conf.d/historical-supervisord.conf
+ADD middleManager-supervisord.conf /etc/supervisor/conf.d/middleManager-supervisord.conf
+ADD mysql-supervisord.conf /etc/supervisor/conf.d/mysql-supervisord.conf
+ADD overlord-supervisord.conf /etc/supervisor/conf.d/overlord-supervisord.conf
+ADD zookeeper-supervisord.conf /etc/supervisor/conf.d/zookeeper-supervisord.conf
+
+#setup start script
+ADD start.sh /bin/start
+RUN chmod a+x /bin/start
+
 
 # Expose ports:
 # - 8081: HTTP (coordinator)
@@ -92,4 +105,4 @@ EXPOSE 3306
 EXPOSE 2181 2888 3888
 
 WORKDIR /var/lib/druid
-ENTRYPOINT export HOSTIP="$(resolveip -s $HOSTNAME)" && exec /usr/bin/supervisord -c /etc/supervisor/conf.d/supervisord.conf
+ENTRYPOINT start all
