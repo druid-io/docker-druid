@@ -1,4 +1,5 @@
 #!/bin/bash
+
 case "$1" in
 	historical)
 		echo "STARTING HISTORICAL"

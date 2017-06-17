@@ -1,9 +1,6 @@
 FROM ubuntu:14.04
 
-# Set version and github repo which you want to build from
-ENV GITHUB_OWNER druid-io
-ENV DRUID_VERSION 0.9.2
-ENV ZOOKEEPER_VERSION 3.4.9
+
 
 # Java 8
 RUN apt-get update \
@@ -25,10 +22,16 @@ RUN wget -q -O - http://archive.apache.org/dist/maven/maven-3/3.2.5/binaries/apa
       && ln -s /usr/local/apache-maven-3.2.5 /usr/local/apache-maven \
       && ln -s /usr/local/apache-maven/bin/mvn /usr/local/bin/mvn
 
+
+
+
 # Zookeeper
+ENV ZOOKEEPER_VERSION 3.4.9
 RUN wget -q -O - http://www.us.apache.org/dist/zookeeper/zookeeper-$ZOOKEEPER_VERSION/zookeeper-$ZOOKEEPER_VERSION.tar.gz | tar -xzf - -C /usr/local \
       && cp /usr/local/zookeeper-$ZOOKEEPER_VERSION/conf/zoo_sample.cfg /usr/local/zookeeper-$ZOOKEEPER_VERSION/conf/zoo.cfg \
       && ln -s /usr/local/zookeeper-$ZOOKEEPER_VERSION /usr/local/zookeeper
+
+
 
 # Druid system user
 RUN adduser --system --group --no-create-home druid \
@@ -38,10 +41,13 @@ RUN adduser --system --group --no-create-home druid \
 # Druid (from source)
 RUN mkdir -p /usr/local/druid/lib
 
+# Set version and github repo which you want to build from
+ENV GITHUB_OWNER druid-io
+ENV DRUID_VERSION 0.10.1
 # trigger rebuild only if branch changed
 ADD https://api.github.com/repos/$GITHUB_OWNER/druid/git/refs/heads/$DRUID_VERSION druid-version.json
 RUN git clone -q --branch $DRUID_VERSION --depth 1 https://github.com/$GITHUB_OWNER/druid.git /tmp/druid
-ADD config-quickstart  /tmp/druid/examples/conf-quickstart
+ADD conf-quickstart  /tmp/druid/examples/conf-quickstart
 WORKDIR /tmp/druid
 
 # package and install Druid locally
@@ -105,4 +111,4 @@ EXPOSE 3306
 EXPOSE 2181 2888 3888
 
 WORKDIR /var/lib/druid
-ENTRYPOINT start all
+ENTRYPOINT /bin/start all
