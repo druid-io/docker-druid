@@ -1,7 +1,5 @@
 FROM ubuntu:14.04
 
-
-
 # Java 8
 RUN apt-get update \
       && apt-get install -y software-properties-common \
@@ -111,4 +109,4 @@ EXPOSE 3306
 EXPOSE 2181 2888 3888
 
 WORKDIR /var/lib/druid
-ENTRYPOINT /bin/start all
+CMD /bin/start all
