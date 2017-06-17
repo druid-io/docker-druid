@@ -1,10 +1,5 @@
 FROM ubuntu:14.04
 
-# Set version and github repo which you want to build from
-ENV GITHUB_OWNER druid-io
-ENV DRUID_VERSION 0.9.2
-ENV ZOOKEEPER_VERSION 3.4.9
-
 # Java 8
 RUN apt-get update \
       && apt-get install -y software-properties-common \
@@ -25,10 +20,16 @@ RUN wget -q -O - http://archive.apache.org/dist/maven/maven-3/3.2.5/binaries/apa
       && ln -s /usr/local/apache-maven-3.2.5 /usr/local/apache-maven \
       && ln -s /usr/local/apache-maven/bin/mvn /usr/local/bin/mvn
 
+
+
+
 # Zookeeper
+ENV ZOOKEEPER_VERSION 3.4.9
 RUN wget -q -O - http://www.us.apache.org/dist/zookeeper/zookeeper-$ZOOKEEPER_VERSION/zookeeper-$ZOOKEEPER_VERSION.tar.gz | tar -xzf - -C /usr/local \
       && cp /usr/local/zookeeper-$ZOOKEEPER_VERSION/conf/zoo_sample.cfg /usr/local/zookeeper-$ZOOKEEPER_VERSION/conf/zoo.cfg \
       && ln -s /usr/local/zookeeper-$ZOOKEEPER_VERSION /usr/local/zookeeper
+
+
 
 # Druid system user
 RUN adduser --system --group --no-create-home druid \
@@ -38,9 +39,13 @@ RUN adduser --system --group --no-create-home druid \
 # Druid (from source)
 RUN mkdir -p /usr/local/druid/lib
 
+# Set version and github repo which you want to build from
+ENV GITHUB_OWNER druid-io
+ENV DRUID_VERSION 0.10.1
 # trigger rebuild only if branch changed
 ADD https://api.github.com/repos/$GITHUB_OWNER/druid/git/refs/heads/$DRUID_VERSION druid-version.json
 RUN git clone -q --branch $DRUID_VERSION --depth 1 https://github.com/$GITHUB_OWNER/druid.git /tmp/druid
+ADD conf-quickstart  /tmp/druid/examples/conf-quickstart
 WORKDIR /tmp/druid
 
 # package and install Druid locally
@@ -76,6 +81,18 @@ RUN /etc/init.d/mysql start \
 
 # Setup supervisord
 ADD supervisord.conf /etc/supervisor/conf.d/supervisord.conf
+ADD broker-supervisord.conf /etc/supervisor/conf.d/broker-supervisord.conf
+ADD coordinator-supervisord.conf /etc/supervisor/conf.d/coordinator-supervisord.conf
+ADD historical-supervisord.conf /etc/supervisor/conf.d/historical-supervisord.conf
+ADD middleManager-supervisord.conf /etc/supervisor/conf.d/middleManager-supervisord.conf
+ADD mysql-supervisord.conf /etc/supervisor/conf.d/mysql-supervisord.conf
+ADD overlord-supervisord.conf /etc/supervisor/conf.d/overlord-supervisord.conf
+ADD zookeeper-supervisord.conf /etc/supervisor/conf.d/zookeeper-supervisord.conf
+
+#setup start script
+ADD start.sh /bin/start
+RUN chmod a+x /bin/start
+
 
 # Expose ports:
 # - 8081: HTTP (coordinator)
@@ -92,4 +109,4 @@ EXPOSE 3306
 EXPOSE 2181 2888 3888
 
 WORKDIR /var/lib/druid
-ENTRYPOINT export HOSTIP="$(resolveip -s $HOSTNAME)" && exec /usr/bin/supervisord -c /etc/supervisor/conf.d/supervisord.conf
+CMD /bin/start all
