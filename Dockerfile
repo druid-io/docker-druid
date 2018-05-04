@@ -3,7 +3,7 @@ FROM ubuntu:14.04
 # Set version and github repo which you want to build from
 ENV GITHUB_OWNER druid-io
 ENV DRUID_VERSION 0.9.2
-ENV ZOOKEEPER_VERSION 3.4.11
+ENV ZOOKEEPER_VERSION 3.4.12
 
 # Java 8
 RUN apt-get update \
