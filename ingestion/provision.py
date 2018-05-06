@@ -38,6 +38,7 @@ def submit_job(druid_host, index_file):
         index_file,
         url
     )
+    print(req_index)
     # Start indexing job
     if req_index.status_code != 200:
         raise ValueError("Did not get HTTP 200 when submitting the job")
