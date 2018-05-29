@@ -3,7 +3,7 @@ FROM ubuntu:14.04
 # Set version and github repo which you want to build from
 ENV GITHUB_OWNER druid-io
 ENV DRUID_VERSION 0.9.2
-ENV ZOOKEEPER_VERSION 3.4.11
+ENV ZOOKEEPER_VERSION 3.4.12
 
 # Java 8
 RUN apt-get update \
@@ -62,7 +62,8 @@ WORKDIR /
 
 # Setup metadata store and add sample data
 ADD sample-data.sql sample-data.sql
-RUN /etc/init.d/mysql start \
+RUN chown -R mysql:mysql /var/lib/mysql /var/run/mysqld \
+      && /etc/init.d/mysql start \
       && mysql -u root -e "GRANT ALL ON druid.* TO 'druid'@'localhost' IDENTIFIED BY 'diurd'; CREATE database druid CHARACTER SET utf8;" \
       && java -cp /usr/local/druid/lib/druid-services-*-selfcontained.jar \
           -Ddruid.extensions.directory=/usr/local/druid/extensions \
