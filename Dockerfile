@@ -1,4 +1,4 @@
-FROM ubuntu:14.04
+FROM ubuntu:18.04
 
 # Set version and github repo which you want to build from
 ENV GITHUB_OWNER druid-io
