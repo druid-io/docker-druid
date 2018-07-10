@@ -62,7 +62,8 @@ WORKDIR /
 
 # Setup metadata store and add sample data
 ADD sample-data.sql sample-data.sql
-RUN /etc/init.d/mysql start \
+RUN find /var/lib/mysql -type f -exec touch {} \; \
+      && /etc/init.d/mysql start \
       && mysql -u root -e "GRANT ALL ON druid.* TO 'druid'@'localhost' IDENTIFIED BY 'diurd'; CREATE database druid CHARACTER SET utf8;" \
       && java -cp /usr/local/druid/lib/druid-services-*-selfcontained.jar \
           -Ddruid.extensions.directory=/usr/local/druid/extensions \
@@ -92,4 +93,4 @@ EXPOSE 3306
 EXPOSE 2181 2888 3888
 
 WORKDIR /var/lib/druid
-ENTRYPOINT export HOSTIP="$(resolveip -s $HOSTNAME)" && exec /usr/bin/supervisord -c /etc/supervisor/conf.d/supervisord.conf
+ENTRYPOINT export HOSTIP="$(resolveip -s $HOSTNAME)" && find /var/lib/mysql -type f -exec touch {} \; && exec /usr/bin/supervisord -c /etc/supervisor/conf.d/supervisord.conf
