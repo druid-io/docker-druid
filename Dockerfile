@@ -1,4 +1,4 @@
-FROM ubuntu:14.04
+FROM ubuntu:18.04
 
 # Set version and github repo which you want to build from
 ENV GITHUB_OWNER druid-io
@@ -39,8 +39,8 @@ RUN adduser --system --group --no-create-home druid \
 RUN mkdir -p /usr/local/druid/lib
 
 # trigger rebuild only if branch changed
-ADD https://api.github.com/repos/$GITHUB_OWNER/druid/git/refs/heads/$DRUID_VERSION druid-version.json
-RUN git clone -q --branch $DRUID_VERSION --depth 1 https://github.com/$GITHUB_OWNER/druid.git /tmp/druid
+ADD https://api.github.com/repos/$GITHUB_OWNER/incubator-druid/git/refs/heads/$DRUID_VERSION druid-version.json
+RUN git clone -q --branch $DRUID_VERSION --depth 1 https://github.com/$GITHUB_OWNER/incubator-druid.git /tmp/druid
 WORKDIR /tmp/druid
 
 # package and install Druid locally
