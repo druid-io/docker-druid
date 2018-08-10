@@ -1,8 +1,8 @@
-FROM ubuntu:14.04
+FROM ubuntu:16.04
 
 # Set version and github repo which you want to build from
 ENV GITHUB_OWNER druid-io
-ENV DRUID_VERSION 0.12.1
+ENV DRUID_VERSION 0.12.2
 ENV ZOOKEEPER_VERSION 3.4.10
 
 # Java 8
