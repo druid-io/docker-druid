@@ -1,4 +1,4 @@
-FROM openjdk:8
+FROM openjdk:8-jre
 
 ENV DRUID_VERSION 0.15.0-incubating
 ENV ZOOKEEPER_VERSION 3.4.11
