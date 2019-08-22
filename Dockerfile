@@ -1,18 +1,19 @@
 FROM openjdk:8
 
-ENV DRUID_VERSION 0.15.0-incubating
-ENV ZOOKEEPER_VERSION 3.4.11
+ENV DRUID_VERSION 0.15.1-incubating
+ENV ZOOKEEPER_VERSION 3.4.14
 
 # Get Druid
-RUN cd /tmp/ && \
-    curl -s http://apache.mirror.anlx.net/incubator/druid/$DRUID_VERSION/apache-druid-$DRUID_VERSION-bin.tar.gz | tar xvz && \
-    mv apache-druid-$DRUID_VERSION /opt/druid
+RUN mkdir -p /tmp \
+    && cd /tmp/ \
+    && curl -fsLS "https://www.apache.org/dyn/closer.cgi?filename=/incubator/druid/$DRUID_VERSION/apache-druid-$DRUID_VERSION-bin.tar.gz&action=download" | tar xvz \
+    && mv apache-druid-$DRUID_VERSION /opt/druid
 
 WORKDIR /opt/druid/
 
 # Zookeeper
-RUN curl -s https://archive.apache.org/dist/zookeeper/zookeeper-$ZOOKEEPER_VERSION/zookeeper-$ZOOKEEPER_VERSION.tar.gz | tar xvz && \
-    mv zookeeper-$ZOOKEEPER_VERSION zk
+RUN curl -fsLS "https://www.apache.org/dyn/closer.cgi?filename=/zookeeper/zookeeper-$ZOOKEEPER_VERSION/zookeeper-$ZOOKEEPER_VERSION.tar.gz&action=download" | tar xvz \
+    && mv zookeeper-$ZOOKEEPER_VERSION zk
 
 ADD config/common.runtime.properties conf/druid/single-server/micro-quickstart/_common/common.runtime.properties
 
