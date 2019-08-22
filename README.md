@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/Fokko/docker-druid.svg?branch=master)](https://travis-ci.org/Fokko/docker-druid)
+
 # Druid Docker Image
 
 ## Run a simple Druid cluster
