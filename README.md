@@ -1,43 +1,18 @@
 [![Build Status](https://travis-ci.org/Fokko/docker-druid.svg?branch=master)](https://travis-ci.org/Fokko/docker-druid)
 
-# Druid Docker Image
+# Apache Druid (Incubating) Docker Image
 
-## Run a simple Druid cluster
+[Install Docker](https://docs.docker.com/install/)
 
-[Install Docker](docker-install.md)
+## Run a simple Apache Druid (Incubating) cluster
 
-Download and launch the docker image
-
+Download and launch the docker image:
 ```sh
 docker pull druidio/example-cluster
-docker run --rm -i -p 3000:8082 -p 3001:8081 druidio/example-cluster
+docker run --rm -i -p 8888:8888 druidio/example-cluster
 ```
 
-Wait a minute or so for Druid to start up and download the sample.
-
-On OS X
-
-- List datasources
-
-```
-curl http://$(docker-machine ip default):3000/druid/v2/datasources
-```
-
-- access the coordinator console
-
-```
-open http://$(docker-machine ip default):3001/
-```
-
-On Linux
-
-- List datasources
-
-```
-curl http://localhost:3000/druid/v2/datasources
-```
-
-- access the coordinator console at http://localhost:3001/
+Once the cluster has started, you can navigate to [http://localhost:8888](http://localhost:8888). The [Druid router process](../development/router.html), which serves the Druid console, resides at this address.
 
 ## Build Druid Docker Image
 
@@ -45,36 +20,29 @@ To build the docker image yourself
 
 ```sh
 git clone https://github.com/druid-io/docker-druid.git
-docker build -t example-cluster docker-druid
+cd docker-druid
+docker build -t docker-druid .
+docker run --rm -i -p 8888:8888 docker-druid
 ```
 
 ## Logging
 
 You might want to look into the logs when debugging the Druid processes. This can be done by logging into the container using `docker ps`:
 ```
-CONTAINER ID        IMAGE                     COMMAND                  CREATED             STATUS              PORTS                                                                                                                      NAMES
-9e73cbfc5612        druidio/example-cluster   "/bin/sh -c 'export H"   7 seconds ago       Up 6 seconds        2181/tcp, 2888/tcp, 3306/tcp, 3888/tcp, 8083/tcp, 0.0.0.0:3001->8081/tcp, 0.0.0.0:3000->8082/tcp    sick_lamport
+CONTAINER ID        IMAGE               COMMAND                  CREATED             STATUS              PORTS                                                                           NAMES
+5782c4d4fa40        docker-druid        "/bin/sh -c ./bin/st…"   4 seconds ago       Up 3 seconds        2181/tcp, 2888/tcp, 3888/tcp, 8081-8083/tcp, 8090/tcp, 0.0.0.0:8888->8888/tcp   angry_banach
 ```
 
-And attaching to the container using `docker exec -ti 9e73cbfc5612 bash` logs are written to `/tmp/`:
+Run the `docker logs` command to fetch the logs.
 
 ```
-root@d59a3d4a68c3:/tmp# ls -lah        
-total 224K
-drwxrwxrwt  8 root   root   4.0K Jan 18 20:38 .
-drwxr-xr-x 61 root   root   4.0K Jan 18 20:38 ..
--rw-------  1 root   root      0 Jan 18 20:38 druid-broker-stderr---supervisor-az6WwP.log
--rw-------  1 root   root    18K Jan 18 20:39 druid-broker-stdout---supervisor-D28zOC.log
--rw-------  1 root   root      0 Jan 18 20:38 druid-coordinator-stderr---supervisor-RYMt5L.log
--rw-------  1 root   root   100K Jan 18 21:14 druid-coordinator-stdout---supervisor-Jq4WCi.log
--rw-------  1 root   root      0 Jan 18 20:38 druid-historical-stderr---supervisor-rmMHmF.log
--rw-------  1 root   root    18K Jan 18 20:39 druid-historical-stdout---supervisor-AJ0SZX.log
--rw-------  1 root   root   7.9K Jan 18 21:09 druid-indexing-service-stderr---supervisor-x3YNlo.log
--rw-------  1 root   root    28K Jan 18 21:14 druid-indexing-service-stdout---supervisor-5uyV7u.log
--rw-------  1 root   root    155 Jan 18 20:38 mysql-stderr---supervisor-NqN9nY.log
--rw-------  1 root   root    153 Jan 18 20:38 mysql-stdout---supervisor-23izTf.log
--rw-------  1 root   root     78 Jan 18 20:38 zookeeper-stderr---supervisor-Rm33j8.log
--rw-------  1 root   root   7.4K Jan 18 20:39 zookeeper-stdout---supervisor-6AFVOR.log
+$ docker logs -f 5782c4d4fa40
+[Wed Aug  7 09:22:41 2019] Running command[zk], logging to[/opt/druid/var/sv/zk.log]: bin/run-zk conf
+[Wed Aug  7 09:22:41 2019] Running command[coordinator-overlord], logging to[/opt/druid/var/sv/coordinator-overlord.log]: bin/run-druid coordinator-overlord conf/druid/single-server/micro-quickstart
+[Wed Aug  7 09:22:41 2019] Running command[broker], logging to[/opt/druid/var/sv/broker.log]: bin/run-druid broker conf/druid/single-server/micro-quickstart
+[Wed Aug  7 09:22:41 2019] Running command[router], logging to[/opt/druid/var/sv/router.log]: bin/run-druid router conf/druid/single-server/micro-quickstart
+[Wed Aug  7 09:22:41 2019] Running command[historical], logging to[/opt/druid/var/sv/historical.log]: bin/run-druid historical conf/druid/single-server/micro-quickstart
+[Wed Aug  7 09:22:41 2019] Running command[middleManager], logging to[/opt/druid/var/sv/middleManager.log]: bin/run-druid middleManager conf/druid/single-server/micro-quickstart
 ```
 
 ## Troubleshooting
